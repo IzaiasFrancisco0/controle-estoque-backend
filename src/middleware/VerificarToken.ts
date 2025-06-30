@@ -18,13 +18,12 @@ function isJwtPayloadCustom(payload: unknown): payload is JwtPayloadCustom {
 
 async function verifyToken(request: FastifyRequest, reply: FastifyReply) {
   try {
-    // Pega token do header Authorization: Bearer <token>
     const authHeader = request.headers.authorization;
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return reply.status(401).send({ mensagem: 'Token não encontrado, faça login' });
     }
 
-    const token = authHeader.substring(7); // remove 'Bearer '
+    const token = authHeader.substring(7); 
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET!);
 
@@ -32,7 +31,7 @@ async function verifyToken(request: FastifyRequest, reply: FastifyReply) {
       return reply.status(401).send({ mensagem: 'Token malformado' });
     }
 
-    request.user = decoded; // Tipagem reconhecida
+    request.user = decoded; 
     return true;
   } catch (err) {
     return reply.status(401).send({ mensagem: 'Token inválido ou expirado' });

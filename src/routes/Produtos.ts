@@ -74,7 +74,7 @@ export default async function routes(fastify: FastifyInstance) {
         await produto.save();
         return reply.status(201).send({ mensagem: 'Produto cadastrado com sucesso!!' });
       } catch (err: any) {
-        console.error('🔥 ERRO AO SALVAR PRODUTO:', err);
+        console.error('ERRO AO SALVAR PRODUTO:', err);
         return reply.status(500).send({
           mensagem: 'Erro ao cadastrar produto',
           erro: err.message ?? 'Erro desconhecido',

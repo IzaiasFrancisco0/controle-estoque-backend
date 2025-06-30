@@ -1,22 +1,8 @@
-"use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-const Senha_js_1 = __importDefault(require("../models/Senha.js"));
-const Conta = (fastify, _opts) => __awaiter(void 0, void 0, void 0, function* () {
-    fastify.get('/conta', (request, reply) => __awaiter(void 0, void 0, void 0, function* () {
+import Senha from '../models/Senha.js';
+const Conta = async (fastify, _opts) => {
+    fastify.get('/conta', async (request, reply) => {
         try {
-            const conta = yield Senha_js_1.default.findOne({});
+            const conta = await Senha.findOne({});
             if (!conta) {
                 return reply.status(404).send({ mensagem: 'Nenhuma senha cadastrada.' });
             }
@@ -26,18 +12,18 @@ const Conta = (fastify, _opts) => __awaiter(void 0, void 0, void 0, function* ()
             console.error(error);
             reply.status(500).send({ mensagem: 'Erro ao buscar senha.' });
         }
-    }));
-    fastify.post('/conta', (request, reply) => __awaiter(void 0, void 0, void 0, function* () {
+    });
+    fastify.post('/conta', async (request, reply) => {
         const { novaSenha, senha } = request.body;
         if (!novaSenha || !senha) {
             reply.status(401).send({ mensagem: 'Campos obrigatórios ausentes' });
             return;
         }
         try {
-            const registroExistente = yield Senha_js_1.default.findOne();
+            const registroExistente = await Senha.findOne();
             if (!registroExistente) {
-                const nova = new Senha_js_1.default({ senha, novaSenha });
-                yield nova.save();
+                const nova = new Senha({ senha, novaSenha });
+                await nova.save();
                 return reply.status(201).send({ mensagem: 'Senha cadastrada com sucesso.' });
             }
             if (registroExistente.senha !== senha) {
@@ -45,23 +31,23 @@ const Conta = (fastify, _opts) => __awaiter(void 0, void 0, void 0, function* ()
             }
             registroExistente.senha = novaSenha;
             registroExistente.novaSenha = novaSenha;
-            yield registroExistente.save();
+            await registroExistente.save();
             return reply.status(200).send({ mensagem: 'Senha atualizada com sucesso.' });
         }
         catch (error) {
             console.error(error);
             return reply.status(500).send({ mensagem: 'Erro no servidor.' });
         }
-    }));
-    fastify.delete('/conta/resetar', (request, reply) => __awaiter(void 0, void 0, void 0, function* () {
+    });
+    fastify.delete('/conta/resetar', async (request, reply) => {
         try {
-            yield Senha_js_1.default.deleteMany({});
+            await Senha.deleteMany({});
             reply.send({ mensagem: 'Senha(s) resetada(s) com sucesso.' });
         }
         catch (error) {
             console.error(error);
             reply.status(500).send({ mensagem: 'Erro ao resetar as senhas.' });
         }
-    }));
-});
-exports.default = Conta;
+    });
+};
+export default Conta;
